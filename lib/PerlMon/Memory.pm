@@ -1,7 +1,7 @@
-package Memory;
+package PerlMon::Memory;
 
 
-#############################################################################
+####################################################################
 # Copyright 2007, 2008 Michael John
 # All Rights Reserved
 #
@@ -18,7 +18,7 @@ package Memory;
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-############################################################################
+####################################################################
 
 use strict;
 
@@ -33,9 +33,7 @@ sub new {
 		"TOTAL_S"	=> "Unknown", #Swap Total
 		"FREE_S"	=> "Unknown", #Swap Free
 		"USED_S"	=> "Unknown", #Swap used
-		"SWAPPINESS"	=> "Unknown", #swappiness number
-		"M_PERCENTAGE"	=> "Unknown", #Percentage of memory used
-		"S_PERCENTAGE"	=> "Unknown"  #Percentage of spaw used
+		"SWAPPINESS"	=> "Unknown" #swappiness number
 	};
 	bless ($self, $class);
 	return $self;
@@ -48,20 +46,12 @@ sub find_info {
 	$_ = `cat /proc/meminfo`;
 	$self->{TOTAL_M} = int $1/1024 if /MemTotal\s*:\s+(\d+)/;
 	$self->{FREE_M} = int $1/1024 if /MemFree\s*:\s+(\d+)/;
-	my $cached = int $1/1024 if /Cached\s*:\s+(\d+)/;
-	$self->{USED_M} = $self->{TOTAL_M} - $self->{FREE_M} - $cached;
+	$self->{USED_M} = $self->{TOTAL_M} - $self->{FREE_M};
 	$self->{TOTAL_S} = int $1/1024 if /SwapTotal\s*:\s+(\d+)/;
 	$self->{FREE_S} = int $1/1024 if /SwapFree\s*:\s+(\d+)/;
 	$self->{USED_S} = $self->{TOTAL_S} - $self->{FREE_S};
 	$self->{SWAPPINESS} = `cat /proc/sys/vm/swappiness`;
 	chomp( $self->{SWAPPINESS} );
-	
-	if ( $self->{TOTAL_M} != 0 ) {
-		$self->{M_PERCENTAGE} = int(( $self->{USED_M} / $self->{TOTAL_M} ) * 100);
-	}	
-	if ( $self->{S_PERCENTAGE} != 0) {
-		$self->{S_PERCENTAGE} = int(( $self->{USED_S} / $self->{TOTAL_S} ) * 100);
-	}
 }
 
 

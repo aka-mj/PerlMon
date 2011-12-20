@@ -1,4 +1,4 @@
-package CPU;
+package PerlMon::CPU;
 
 
 ##############################################################
@@ -77,13 +77,12 @@ sub find_info {
 
 	
 	if ($graphical) {
-		$self->{LOGO} = Gtk2::Image->new();
 		if ($self->{VENDOR} =~ /AMD/) {
-			$self->{LOGO}->set_from_file(IMAGE_PATH."/amd_logo.png");
+			$self->{LOGO} = "/amd_logo.png";
 		} elsif ($self->{VENDOR} =~ /Intel/) {
-			$self->{LOGO}->set_from_file(IMAGE_PATH."/intel_logo.png");
+			$self->{LOGO} = "/intel_logo.png";
 		} else {
-			$self->{LOGO}->set_from_file(IMAGE_PATH."/cpu.png");
+			$self->{LOGO} = "/cpu.png";
 		}
 	}
 }

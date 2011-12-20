@@ -1,8 +1,10 @@
+package PerlMon::Distro;
 
-package Distro;
-
+use 5.008008;
+use warnings;
 use strict;
 
+our $VERSION = '0.2';
 
 # Tries figuring out which distro the user is running and assigns the 
 # distros logo.
@@ -46,8 +48,7 @@ sub getDistro {
 	my $file; ## full path to file
    	
    	my $index = 0;
-	my $path = "./images";
-	my $logo = Gtk2::Image->new_from_file("$path/tux.png") if $graphical;
+	my $logo = "tux.png" if $graphical;
 
    	if (-f "/etc/coas") {
       		openFile("/etc/coas");
@@ -56,52 +57,52 @@ sub getDistro {
 	} elsif (-f "/etc/fedora-release") { 
 		## Fedora	
 		openFile("/etc/fedora-release");
-		$logo->set_from_file("$path/fedora_logo.png") if $graphical;
+		$logo = "fedora_logo.png" if $graphical;
 	} elsif (-f "/etc/mandrake-release") {
 		## Mandrake
 		openFile("/etc/mandrake-release");
-		$logo->set_from_file("$path/mandriva_logo.png") if $graphical;
+		$logo = "mandriva_logo.png" if $graphical;
 	} elsif (-f "/etc/mandriva-release") {
 		## Mandriva
 		openFile("/etc/mandriva-release");
-		$logo->set_from_file("$path/mandriva_logo.png") if $graphical;
+		$logo = "mandriva_logo.png" if $graphical;
 	} elsif (-f "/etc/SuSE-release") {
 		## SUSE
 		openFile("/etc/SuSE-release");
-		$logo->set_from_file("$path/suse_logo.png") if $graphical;
+		$logo = "suse_logo.png" if $graphical;
 	} elsif (-f "/etc/turbolinux-release") {
 		## Turbo Linux
 		openFile("/etc/turbolinux-release");
-		$logo->set_from_file("$path/turbolinux_logo.png") if $graphical;
+		$logo = "turbolinux_logo.png" if $graphical;
 	} elsif (-f "/etc/slackware-version") {
 		## Slackware
 		openFile("/etc/slackware-version");
-		$logo->set_from_file("$path/slackware_logo.png") if $graphical;
+		$logo = "slackware_logo.png" if $graphical;
 	} elsif (-f "/etc/enlisy-release") {
 		## Enlisy
 		openFile("/etc/enlisy-release");
-		$logo->set_from_file("$path/enlisy_logo.png") if $graphical;
+		$logo = "enlisy_logo.png" if $graphical;
 	} elsif (-f "/etc/arch-release") {
 		## Arch Linux
 		## $distro = `$CAT /etc/arch-release`;
 		$distro = "Arch";
-		$logo->set_from_file("$path/arch_logo.png") if $graphical;
+		$logo = "arch_logo.png" if $graphical;
 	} elsif (-f "/etc/sabayon-release") {
 		## Sabayon
 		openFile("/etc/sabayon-release");
-		$logo->set_from_file("$path/sabayon_logo.png") if $graphical;
+		$logo = "sabayon_logo.png" if $graphical;
 	} elsif (-f "/etc/gentoo-release") {
 		## Gentoo
 		openFile("/etc/gentoo-release");
-		$logo->set_from_file("$path/gentoo_logo.png") if $graphical;
+		$logo = "gentoo_logo.png" if $graphical;
 	}elsif (-f "/etc/redhat-release") {
 		## Red Hat
  		openFile("/etc/redhat-release");
-		$logo->set_from_file("$path/redhat_logo.png") if $graphical;
+		$logo = "redhat_logo.png" if $graphical;
 	} elsif (-f "/etc/zenwalk-version") {
 		## Zenwalk
 		openFile("/etc/zenwalk-version");
-		$logo->set_from_file("$path/zenwalk_logo.png") if $graphical;
+		$logo = "zenwalk_logo.png" if $graphical;
 	} elsif (-f "/etc/lsb-release"){
 
 	   ## Ubuntu
@@ -118,12 +119,12 @@ sub getDistro {
 	   $data[2] = "(".$data[2].")";
 	   $distro = join (" ", $data[0], $data[1], $data[2]);
 
-	   $logo->set_from_file("$path/ubuntu_logo.png") if $graphical;
+	   $logo = "ubuntu_logo.png" if $graphical;
 
    	} elsif (-f "/etc/debian_version" && $distro eq "Unknown Distro") {
 		##Debian
 		$distro = "Debian ".readpipe("/etc/debian_version");
-		$logo->set_from_file("$path/debian_logo.png") if $graphical;
+		$logo = "debian_logo.png" if $graphical;
 	} else {
 
 		## This is a last resort to try and identify the distro

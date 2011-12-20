@@ -1,4 +1,4 @@
-package Monitor;
+package PerlMon::Monitor;
 
 #############################################################################
 # Copyright© 2007, 2008 Michael John

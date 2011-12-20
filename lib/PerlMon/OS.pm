@@ -1,4 +1,4 @@
-package OS;
+package PerlMon::OS;
 
 
 
@@ -22,8 +22,8 @@ package OS;
 ############################################################################
 
 use strict;
-use WMDE;
-use Distro;
+use PerlMon::WMDE;
+use PerlMon::Distro;
 
 
 # Constructor
@@ -31,7 +31,6 @@ sub new {
 	my $class = shift;
 	my $self = {
 		"USER"			=> "Unknown",
-		"USER_ID"			=> "Unknown",
 		"HOSTNAME"		=> "Unknown",
 		"UPTIME"			=> "Unknown",
 		"OSTYPE"			=> "Unknown",
@@ -41,7 +40,11 @@ sub new {
 		"KERNEL_RES"		=> "Unknown",
 		"KERNEL_VER"		=> "Unknown",
 		"WM"			=> "Unknown",
-		"DE"				=> "Unknown"
+		"DE"				=> "Unknown",
+		"THEME"			=> "Unknown",
+		"CSCHEME"		=> "Unknown",
+		"ICON"			=> "Unknown",
+		"FONT"			=> "Unknown"
 	};
 	bless ($self, $class);
 	return $self;
@@ -56,15 +59,21 @@ sub find_info {
 	my $AWK = `which awk`;
 	chomp( $UNAME, $PS, $AWK );
 	chomp( $self->{USER} = getpwuid($<) );
-	chomp( $self->{USER_ID} = $< );
 	chomp( $self->{HOSTNAME} = `$UNAME -n` );
 	chomp( $self->{UPTIME} = &uptime(`cat /proc/uptime`) );
 	chomp( $self->{OSTYPE} = `$UNAME -o` );
 	chomp( $self->{HARDWARE} = `$UNAME -i` );
-	chomp( ($self->{DISTRO}, $self->{DISTRO_LOGO}) = Distro::getDistro($graphical) );
-	chomp( ($self->{WM}, $self->{DE}) = WMDE::getWMDE($PS, $AWK) );
+	chomp( ($self->{DISTRO}, $self->{DISTRO_LOGO}) = PerlMon::Distro::getDistro($graphical) );
+	chomp( ($self->{WM}, $self->{DE}) = PerlMon::WMDE::getWMDE($PS, $AWK) );
 	chomp( $self->{KERNEL_RES} = `$UNAME -r` );
 	chomp( $self->{KERNEL_VER} = `$UNAME -v` );
+	
+	($self->{THEME}, $self->{CSCHEME}, $self->{ICON}, $self->{FONT}) = fgrep(["$ENV{HOME}/.kde/share/config/kdeglobals"],
+                                      ['widgetStyle=(.+?)\s',
+                                       'colorScheme=(.+?)\.kcsrc\s',
+                                       'Theme=(.+?)\s',
+                                       'font=(.+?)\s']);
+    $self->{FONT} = (split /,/, $self->{FONT})[0];
 }
 
 
@@ -105,16 +114,43 @@ sub uptime {
 # finds.
 sub toString {
 	my $self = shift;
-	return (" User: $self->{USER}     User id: $self->{USER_ID}\n".
-		" Host: $self->{HOSTNAME} \n".
+	return (" $self->{USER} @ $self->{HOSTNAME} \n".
 		" Uptime: $self->{UPTIME} \n\n".
 		" OS: $self->{OSTYPE} \n".
 		" Distro: $self->{DISTRO} \n".
 		" WM: $self->{WM} \n".
 		" DE: $self->{DE} \n\n".
+		" Window Theme: $self->{THEME} \n".
+		" Color Scheme: $self->{CSCHEME} \n".
+		" Icon set: $self->{ICON} \n".
+		" Font: $self->{FONT} \n\n".
 		" Kernel release: $self->{KERNEL_RES} \n".
 		" Kernel version: $self->{KERNEL_VER} \n"
 	);
+}
+
+sub fgrep(\@\@) {
+    my($files,$regexps) = @_;
+    my @retvals = ();
+    my $slurp = $/; undef $/;
+
+    foreach my $file (@$files) {
+        next if !(-e $file);
+
+        open FILE, "<", $file || die "Error opening '$file', $!\n";
+        my $content = <FILE>;
+        close FILE;
+
+        foreach my $regexp (@$regexps) {
+            my $expg = 0; $expg++ while( $regexp =~ /\(.*?\)/g );
+            my @tmp = $content =~ /$regexp/sg;
+            push @tmp, "" while( scalar @tmp < $expg );
+            @retvals = (@retvals,@tmp);
+        }
+    }
+
+    $/ = $slurp;
+    @retvals;
 }
 
 1; #make compiler happy

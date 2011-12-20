@@ -50,3 +50,23 @@ ChangeLog
 	Variable name changes in all modules
 	Documentation added
 	Screen color added under monitor tab
+	Release 0.1.4
+
+05/17/08
+	Modules for PerlMon are now installable. Were created with 'h2xs -X'.
+	The perlmon script will now require that the PerlMon::Modules to be installed, or somewhere in the @INC.
+	Testing of the modules.
+	Simple display mode for the GUI
+	Reconize Color theme, window theme, icon set, and system font of KDE
+
+05/31/08
+	Installer finished
+	Setting.pm removed and fs-skip.txt removed (replace with perlmon configure file)
+	PerlMon configure file added (perlmonrc). Durning install its added to /etc and when running if one is not found in $HOME then one will be copied over from /etc.
+	The path to the images folder now is in one spot instead of the embedded 5 different spots.
+	Numerous changes to the Modules and perlmon script:
+		-Image paths
+		-Redundant code in Memory.pm
+		-In OS.pm reverted back to initial way to display username and host
+		-Simple display mode for terminal
+	Release 0.2.0

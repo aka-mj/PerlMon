@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 
 #############################################################################
@@ -12,27 +12,26 @@
 #    the Free Software Foundation; under current version 3 of the License.
 #
 #    PerlMon is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    but WITHOUT ANY WARRANTY;  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ############################################################################
-    
+
 use warnings;
 use strict;
-use OS;
-use CPU;
-use Memory;
-use Monitor;
-use GPU;
-use HD;
-use Sensors;
+use PerlMon::OS;
+use PerlMon::CPU;
+use PerlMon::Memory;
+use PerlMon::Monitor;
+use PerlMon::GPU;
+use PerlMon::HD;
+use PerlMon::Sensors;
 use Getopt::Long;
-use constant IMAGE_PATH => './images/';
+use constant IMAGE_PATH => '/usr/share/perlmon/images/';
 use constant TEXT_SPACER => 78;
-my $VERSION = "0.1.4"; # constant
+my $VERSION = "0.2.0"; # constant
 
 
 #############################################################################
@@ -42,9 +41,11 @@ my $VERSION = "0.1.4"; # constant
 my $opt_h;
 my $opt_n;
 my $opt_v;
+my $opt_s;
 GetOptions("help|h" 	=> \$opt_h,
 	   "nogui|n"	=> \$opt_n,
-	   "version|v"	=> \$opt_v
+	   "version|v"	=> \$opt_v,
+	   "simple|s"	=> \$opt_s
 );
 
 ##
@@ -56,7 +57,7 @@ if ($opt_h) {
 	This program is used to view hardware information and Operating System 
 	settings.
 	
-	Copyright  2007 Michael John <perlmon.linux\@gmail.com>
+	Copyright (c) 2007, 2008 Michael John <perlmon.linux\@gmail.com>
 	
 	PerlMon is Licence under the GNU General Public License.
 	This program comes with ABSOLUTELY NO WARRANTY.
@@ -71,13 +72,16 @@ if ($opt_h) {
 	
 	-n, --nogui
 		Print out information to console only and exit.
+
+	-s, --simple
+		Print out some basic information on the OS.
 		
 	\n\n
 	Some Examples:
-		./perlmon.pl
-		perl perlmon.pl
-		perl perlmon.pl --nogui
-		./perlmon.pl --help
+		perlmon
+		perlmon -s
+		perlmon -n
+		perlmon -s -n
 	\n\n) ## End of --help print out 
 	and exit;
 }
@@ -100,13 +104,13 @@ sub Header {
 };
 	     
 ## Making object
-my $OS = OS->new();
-my $CPU = CPU->new();
-my $Memory = Memory->new();
-my $HD = HD->new();
-my $Monitor = Monitor->new();
-my $GPU = GPU->new();
-my $Sensor = Sensors->new();
+my $OS = PerlMon::OS->new();
+my $CPU = PerlMon::CPU->new();
+my $Memory = PerlMon::Memory->new();
+my $HD = PerlMon::HD->new();
+my $Monitor = PerlMon::Monitor->new();
+my $GPU = PerlMon::GPU->new();
+my $Sensor = PerlMon::Sensors->new();
 
 
 
@@ -130,14 +134,22 @@ print qq(\nPerlMon: version $VERSION \n
 if ($opt_n) {
 	## finding info
 	$OS->find_info(0); 
+	
+	## printing out info to screen
+	## simple option
+	if ($opt_s) {
+		print Header(""),"\n",$OS->toString(),"\n\n";
+		exit(0);
+	}
+	
+	## finding rest of info 
 	$CPU->find_info(0);
 	$Memory->find_info();
 	$HD->find_info();
 	$Monitor->find_info();
 	$GPU->find_info(0);
 	$Sensor->find_info();
-	
-	
+
 	## printing out info to screen
 	## for Text mode
 	print Header("Operating System Info");
@@ -161,13 +173,15 @@ if ($opt_n) {
 	print Header("Sensors");
 	print $Sensor->toString(),"\n";
 
+
 } else {  ## For GTK2 GUI
 
 
 	print "#" x TEXT_SPACER,"\n";
 	use constant FALSE => 0;
 	use constant TRUE => 1;
-	#use Glib qw/TRUE FALSE/;
+	use constant WINDOW_HEIGHT => 400;
+	use constant WINDOW_WIDTH  => 600;
 
 	##
 	## Test to see if the module Gtk2.pm is install
@@ -178,14 +192,36 @@ if ($opt_n) {
 	## still run PerlMon in text-mode.
 	BEGIN {
 		my $mod = "Gtk2 '-init'";
-		#if (eval "use $mod; 1") {
-		#	warn "Gtk2.pm could not be found. $@";
-		#} else { }
 		eval "use $mod;"; warn $@ if $@;
-
 	}
 
+if ($opt_s) {
+	# create simple window
+	$OS->find_info(1);
+	my ($window, $table, $label, $image);
 	
+	$window = Gtk2::Window->new("toplevel");
+	$window->signal_connect( destroy => sub { Gtk2->main_quit; });
+	$window->set_title("PerlMon");
+	$window->set_position("center");
+	$window->set_border_width(10);
+	$window->set_default_size(500, 100);
+	$window->set_icon_from_file(IMAGE_PATH."./window_logo.png");
+
+	$table = Gtk2::Table->new(1, 5, FALSE);
+	$image = Gtk2::Image->new_from_file(IMAGE_PATH.$OS->getLogo());
+	$table->attach($image, 3, 5, 0, 1, 'fill', 'fill', 5, 5);
+	
+	$label = Gtk2::Label->new($OS->toString(0));
+	$table->attach($label, 0, 3, 0, 1, 'expand', 'expand', 5, 5);
+	$window->add($table);
+	$window->show_all;
+
+	Gtk2->main;
+	exit 0;
+	
+}
+
 	## finding info
 	$OS->find_info(1); 
 	$CPU->find_info(1);
@@ -198,9 +234,6 @@ if ($opt_n) {
 #----------------------------------------------------------------------
 # Beginning of the GTK2 GUI code
 #----------------------------------------------------------------------
-use constant WINDOW_HEIGHT => 400;
-use constant WINDOW_WIDTH  => 600;
-
 my ($window, $hbox, $vbox, $vboxmenu,$frame, $label, $button, $table, 
 	$notebook, $pagetitle, $entry, $pbar, $align, $separator, $image,
 	$statusbar
@@ -213,7 +246,7 @@ $window->set_title("PerlMon");
 $window->set_position("center");
 $window->set_border_width(10);
 $window->set_default_size(WINDOW_WIDTH, WINDOW_HEIGHT);
-$window->set_icon_from_file(IMAGE_PATH."./window_logo.png");
+$window->set_icon_from_file(IMAGE_PATH."window_logo.png");
 
 $table = Gtk2::Table->new(5, 6, FALSE);
 $window->add($table);
@@ -227,7 +260,7 @@ $notebook->show();
 ## Statusbar
 $statusbar = Gtk2::Statusbar->new();
 $statusbar->set_has_resize_grip(FALSE);
-$statusbar->push(1, "Version: ".$VERSION);
+$statusbar->push(1, "PerlMon-$VERSION");
 $table->attach_defaults($statusbar, 0, 6, 4, 5);
 
 ## Creating a VBox
@@ -244,7 +277,8 @@ $frame->set_border_width(10);
 $frame->show();
 
 $table = Gtk2::Table->new(1, 5, FALSE);
-$table->attach($OS->getLogo(), 3, 5, 0, 1, 'fill', 'fill', 5, 5);
+$image = Gtk2::Image->new_from_file(IMAGE_PATH.$OS->getLogo());
+$table->attach($image, 3, 5, 0, 1, 'fill', 'fill', 5, 5);
 
 $label = Gtk2::Label->new($OS->toString(0));
 $table->attach($label, 0, 3, 0, 1, 'expand', 'expand', 5, 5);
@@ -266,7 +300,8 @@ $separator = Gtk2::HSeparator->new();
 $table->attach($separator, 0, 5, 1, 2, 'fill', 'fill', 2, 2);
 
 ## Adding image and labels to table
-$table->attach($CPU->getLogo(), 4, 5, 0, 1, 'expand', 'expand', 2, 2);
+$image = Gtk2::Image->new_from_file(IMAGE_PATH.$CPU->getLogo());
+$table->attach($image, 4, 5, 0, 1, 'expand', 'expand', 2, 2);
 $label = Gtk2::Label->new($CPU->toString_top_left());
 $table->attach($label, 0, 3, 0, 1, 'expand', 'expand', 2, 2);
 
@@ -354,7 +389,8 @@ $vbox = Gtk2::VBox->new(TRUE, 0);
 $table = Gtk2::Table->new(1, 5, FALSE);
 $table->attach($vbox, 3, 5, 0, 1, 'fill', 'fill', 5, 5);
 $frame->add($table);
-$vbox->pack_start($GPU->getLogo(0), FALSE, FALSE, 5);
+$image = Gtk2::Image->new_from_file(IMAGE_PATH.$GPU->{LOGO});
+$vbox->pack_start($image, FALSE, FALSE, 5);
 
 $label = Gtk2::Label->new($GPU->toString());
 #$label->set_justify('center');
@@ -383,9 +419,9 @@ $label->show();
 
 $notebook->append_page($frame, "Monitor");
 
-############################################################################
+########################################################################
 ##            Testing             ##########################################
-############################################################################
+########################################################################
 $frame = Gtk2::Frame->new("Temps");
 $frame->set_border_width(10);
 $frame->show();
@@ -401,9 +437,9 @@ $table->attach(Gtk2::Label->new("lm_sensors:\n\n".$Sensor->toString()), 3, 5, 0,
 $frame->add($table);
 $notebook->append_page($frame, "Temps");
 
-############################################################################
+########################################################################
 ##           End Testing         ###########################################
-############################################################################
+########################################################################
 
 ##
 ## End of adding notebook pages.

@@ -35,23 +35,10 @@ Dependencies required by PerlMon:
 	Perl
 	Gtk2 (optional) (needed to run PerlMon in GUI mode)
 	Gtk2-Perl (only needed if you do not have a full Gtk2 collection)
-	Glib (no longer needed as of release 0.1.1)
 	Nvidia driver (Optional) (provides better GPU information)
 		(ATI and Intel support will come in later releases)
 	
 			
-How to unpack a PerlMon package:
-
-	Open a terminal(console) and move to the directory where you 
-		saved the PerlMon package, and type the following.
-	
-	** IF IN A .TAR.GZ ARCHIVE **
-	tar zxvf PerlMon-{VERSION}
-	cd PerlMon-{VERSION}
-	
-	** IF IN A .ZIP ARCHIVE **
-	unzip PerlMon-{VERSION}
-	cd PerlMon-{VERSION}
 	
 NOTE: Currently you don't need to install anything to run PerlMon, 
 	as long as Perl is installed you can run in text mode and 
@@ -59,16 +46,22 @@ NOTE: Currently you don't need to install anything to run PerlMon,
 	I plan on providing a basic installer some time soon.
 	
 	
+Installing PerlMon:
+	
+	To install PerlMon follow these steps:
+		open up a terminal and change directories to the PerlMon package.
+		Example(if it's in your home directory): cd ~/PerlMon-#.#.#
+		then type (super user privileges needed):
+			perl Installer
+
+		
 How to run PerlMon:
 	
-	Running PerlMon is as easy as simple double clicking on the script
-	file called "perlmon".
+	In the terminal you can type:
+		perlmon
 	
-	If that does not work for you, then open up a terminal and move to
-	the PerlMon folder and type "perl perlmon"
-	
-	Example:
-		perl perlmon
+	or for help type:
+		perlmon -h
 		
 		
 PerlMon can run a Gtk2 based GUI or a text dump in a terminal.

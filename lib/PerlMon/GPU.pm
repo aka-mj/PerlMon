@@ -1,4 +1,4 @@
-package GPU;
+package PerlMon::GPU;
 
 
 #############################################################################
@@ -21,7 +21,6 @@ package GPU;
 ############################################################################
 
 use strict;
-use constant IMAGE_PATH => './images';
 
 ## Constructor
 sub new {
@@ -75,18 +74,11 @@ sub find_info {
 	 
 	 ## Determins logo if $graphical is true
 	 if ($graphical) {
-		$self->{LOGO} = Gtk2::Image->new_from_file(IMAGE_PATH."/gpu.png");
+		$self->{LOGO} = "gpu.png";
 		if ($self->{VENDOR} eq "Nvidia") {
-	 		$self->{LOGO}->set_from_file(IMAGE_PATH."/nvidia_logo.png");
+	 		$self->{LOGO} = "nvidia_logo.png";
 		}
 	   }
-}
-
-
-## Gets GTK::Image for vendor logo
-sub getLogo {
-	my $self = shift;
-	return $self->{LOGO};
 }
 
 

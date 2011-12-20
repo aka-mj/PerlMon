@@ -1,4 +1,4 @@
-package HD;
+package PerlMon::HD;
 
 
 #############################################################################
@@ -21,7 +21,7 @@ package HD;
 ############################################################################
 
 use strict;
-require "./settings/Settings.pm";
+
 
 # Constructor
 sub new {
@@ -45,10 +45,11 @@ sub find_info {
 	my $self = shift;
 	@_ = `df -Th`;
 	shift @_;
+	my $skip_fs = &skip_fstype();
 	my $index = 0;
 	foreach my $m (@_) {
 		my @b = split(/\s+/, $m);
-		next if Settings::skip_fstype() =~ /$b[1]/;
+		next if $skip_fs =~ /$b[1]/;
 		$self->{USED}[$index] = $b[3];
 		$self->{USEDP}[$index] = $b[5];
 		$self->{FS}[$index] = $b[0];
@@ -81,6 +82,26 @@ sub toString {
 	}
 	return $string;
 			
+}
+
+# Reading the settings file that tells PerlMon what File system types to not 
+# include in the Hard Drive tab.
+sub skip_fstype {
+	my $file = `echo \$HOME`;
+	chomp($file);
+	$file .= "/.perlmonrc";
+	if ( not -e "$file") {
+		`cp /etc/perlmonrc $file`;
+	}
+	open (FS, $file) || die ("Cannot open file for File System type settings. \n $file");
+
+	foreach my $m (<FS>) {
+		next if $m =~ /^\s*\#/;
+		$_[1] .= $m. " ";
+	}
+	close(FS);
+	$_[1] =~ s/\n//g;
+	return $_[1];
 }
 
 

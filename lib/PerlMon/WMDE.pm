@@ -1,4 +1,4 @@
-package WMDE;
+package PerlMon::WMDE;
 
 #############################################################################
 # Copyright  2007, 2008 Michael John <perlmon.linux@gmail.com>
