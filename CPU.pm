@@ -1,7 +1,7 @@
 package CPU;
 
 
-#############################################################################
+##############################################################
 # Copyright© 2007, 2008 Michael John
 # All Rights Reserved
 #
@@ -18,7 +18,14 @@ package CPU;
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-############################################################################
+##############################################################
+
+## this to add
+## 
+## Code name
+## Socket
+## technology (65nm, 90nm, ...)
+## number of cores
 
 use strict;
 use constant IMAGE_PATH => './images';
@@ -27,15 +34,17 @@ use constant IMAGE_PATH => './images';
 sub new {
 	my $class = shift;
 	my $self = {
-		"VENDOR"	=> "Unknown",
+		"VENDOR"		=> "Unknown",
 		"MODEL"		=> "Unknown",
 		"SPEED"		=> "Unknown",
 		"STEPPING"	=> "Unknown",
-		"FAMILY"	=> "Unknown",
+		"FAMILY"		=> "Unknown",
 		"MODEL_NUM"	=> "Unknown",
 		"L1CACHE"	=> "Unknown",
 		"L2CACHE"	=> "Unknown",
 		"ARCH"		=> "Unknown",
+		"FLAGS"		=> "Unknown", #EM64T, x86-64
+		#"CORES"		=> "1",
 		"LOGO"		=> undef
 	};
 	bless ($self, $class);
@@ -52,13 +61,20 @@ sub find_info {
 	$self->{ARCH} = `$UNAME -m`; 
 	chomp $self->{ARCH};
 	$self->{VENDOR} = $1 if $_ =~ /vendor_id\s*:\s+(\w+)/;
-	$self->{MODEL} = $1 if /model name\s*:\s+(.*)\n/;
-	$self->{SPEED} = $1 if /cpu MHz\s*:\s+(\d+\.\d+)/;
-	$self->{STEPPING} = $1 if /stepping\s*:\s+(\d+)/;
 	$self->{FAMILY} = $1 if /cpu family\s*:\s+(\d+)/;
 	$self->{MODEL_NUM} = $1 if /model\s*:\s+(\d+)/;
+	$self->{MODEL} = $1 if /model name\s*:\s+(.*)\n/;
+	$self->{STEPPING} = $1 if /stepping\s*:\s+(\d+)/;
+	$self->{SPEED} = $1 if /cpu MHz\s*:\s+(\d+\.\d+)/;
 	$self->{L2CACHE} = $1 if /cache size\s*:\s+(\d+\s*\w+)/;
+
+	$self->{FLAGS} = $1 if /flags\s*:\s*.*(mmx)/;
+	$self->{FLAGS} .= ", ".$1.", ".$2 if /flags\s*:\s*.*(sse).*(sse2)/;
+	$self->{FLAGS} .= ", ".$1 if /flags\s*:\s*.*(sse3)/;
+	$self->{FLAGS} .= ", ".$1 if /flags\s*:\s*.*(3dnow)/;
+	
 	$self->{L1CACHE} = &cacheL1(`$DMESG | grep "L1"`);
+
 	
 	if ($graphical) {
 		$self->{LOGO} = Gtk2::Image->new();
@@ -89,7 +105,8 @@ sub toString_top_left {
 		" CPU Arch: $self->{ARCH} \n".
 		" CPU Family: $self->{FAMILY} \n".
 		" CPU Model : $self->{MODEL_NUM} \n".
-		" CPU Stepping: $self->{STEPPING} \n"
+		" CPU Stepping: $self->{STEPPING} \n".
+		" Instructions : $self->{FLAGS} \n"
 	);
 }
 

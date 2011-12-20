@@ -27,9 +27,9 @@ use constant IMAGE_PATH => './images';
 sub new {
 	my $class = shift;
 	my $self = {
-		RAM		=> "Unknown", #Amount of RAM
-		TWINVIEW	=> "Unknown", #Twin view (on/off)
-		CORETEMP	=> "Unknown", #Core temp (Celsius)
+		RAM			=> "Unknown", #Amount of RAM
+		TWINVIEW		=> "Unknown", #Twin view (on/off)
+		CORETEMP		=> "Unknown", #Core temp (Celsius)
 		AMBTEMP		=> "Unknown", #Ambient temp (Celsius)
 		CLOCK		=> "Unknown", #Clock speeds
 		DRIVER_VER	=> "Unknown", #Driver version
@@ -96,9 +96,9 @@ sub toString {
 	return (" Number of GPUs: $self->{NUMBER} \n".
 	        " Name: $self->{NAME} \n".
 		" Video RAM: $self->{RAM} MB \n".
-		" Video Core Temp: $self->{CORETEMP} C \n".
-		" Video Ambient Temp: $self->{AMBTEMP} C \n".
-		" Video Clocks: $self->{CLOCK} \n".
+		" Core Temp: $self->{CORETEMP} C \n".
+		" Ambient Temp: $self->{AMBTEMP} C \n".
+		" Clocks: $self->{CLOCK} \n".
 		" Twin view: $self->{TWINVIEW} \n".
 		" $self->{VENDOR} Driver Version: $self->{DRIVER_VER} \n".
 		" $self->{VENDOR} Control Version: $self->{CONTROL_VER} \n".

@@ -27,7 +27,8 @@ sub new {
 	my $self = {
 		"RESOLUTION"	=> "Unknown",
 		"DEPTH"		=> "Unknown",
-		"REFRESH"	=> "Unknown"
+		"REFRESH"		=> "Unknown",
+		"COLOR"		=> "Unknown"
 	};
 	bless ($self, $class);
 	return $self;
@@ -39,21 +40,26 @@ sub find_info {
 	my $self = shift;
 	my $NVIDIA = `which nvidia-settings`;
 	chomp $NVIDIA;
-	my $XWININFO = `which xwininfo`;
-	chomp $XWININFO;
+	
 	$_ = `$NVIDIA -q RefreshRate`;
 	$self->{REFRESH} = $1 + 1 if /Attribute\s+\'RefreshRate\'.*\):\s+(\d+)/;
-	$self->{DEPTH} = $1 if `$XWININFO -root` =~ /Depth: (\d+)/;
+
+	my $XWININFO = `which xwininfo`;
+	chomp $XWININFO;
+	$_ = `$XWININFO -root`;
+	$self->{DEPTH} = $1 if /Depth: (\d+)/;
 	$self->{RESOLUTION} = &MonitorRes($XWININFO, "grep");
+	$self->{COLOR} = $1 if /Visual\s+Class:\s+(\S+)/;
 }
 	
 
 # Returns a String of the information
 sub toString {
 	my $self = shift;
-	return (" Monitor Resolution: $self->{RESOLUTION} \n".
-		" Monitor Refresh Rate: $self->{REFRESH} Hz\n".
-		" Screen Depth: $self->{DEPTH} \n"
+	return (" Resolution: $self->{RESOLUTION} \n".
+		" Refresh Rate: $self->{REFRESH} Hz\n".
+		" Depth: $self->{DEPTH} \n".
+		" Color: $self->{COLOR} \n"
 	);
 }
 	

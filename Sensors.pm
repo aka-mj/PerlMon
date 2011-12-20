@@ -62,6 +62,11 @@ sub find_info {
 	$self->{FAN3} = $1 if /fan3:\s+(\d+\s+RPM)/;
 
 	$self->{MB_TEMP} = $1 if /M\/B\sTemp:\s+(.\d+..)/;
+	if ($self->{MB_TEMP} == "Unknown") {
+		open (FILE, "/proc/acpi/thermal_zone/THRM/temperature") || warn @_;
+		$self->{MB_TEMP} = "+".$1 if <FILE> =~ /\w*:\s*(.*)(?=\n)/;
+		close (FILE);
+	}
 	$self->{CPU_TEMP} = $1 if /CPU\sTemp:\s+(.\d+..)/;
 	$self->{OTHER_TEMP} = $1 if /Temp\d:\s+(.\d+..)/;
 }
@@ -80,8 +85,8 @@ sub toString {
 		" Fan2: $self->{FAN2}\n".
 		" Fan3: $self->{FAN3}\n".
 		" Mainboard temp: $self->{MB_TEMP}\n".
-		" CPU temp: $self->{CPU_TEMP}\n".
-		" Other temp: $self->{OTHER_TEMP}\n"
+		" CPU temp: $self->{CPU_TEMP} C\n".
+		" Other temp: $self->{OTHER_TEMP} C\n"
 	);
 }
 		

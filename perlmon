@@ -2,7 +2,7 @@
 
 
 #############################################################################
-# Copyright  2007, 2008 Michael John <perlmon.linux@gmail.com>
+# Copyright(c)  2007, 2008 Michael John <perlmon.linux@gmail.com>
 # All Rights Reserved
 #
 # This file is part of the PerlMon package.
@@ -32,7 +32,7 @@ use Sensors;
 use Getopt::Long;
 use constant IMAGE_PATH => './images/';
 use constant TEXT_SPACER => 78;
-my $VERSION = "0.1.3"; # constant
+my $VERSION = "0.1.4"; # constant
 
 
 #############################################################################
@@ -118,7 +118,7 @@ print qq(\nPerlMon: version $VERSION \n
 	This program is used to view hardware information and Operating System 
 	settings.
 	
-	Copyright  2007 Michael John <perlmon.linux\@gmail.com>
+	Copyright (c)  2007, 2008 Michael John <perlmon.linux\@gmail.com>
 	
 	PerlMon is Licence under the GNU General Public License.
 	This program comes with ABSOLUTELY NO WARRANTY.\n
@@ -227,8 +227,7 @@ $notebook->show();
 ## Statusbar
 $statusbar = Gtk2::Statusbar->new();
 $statusbar->set_has_resize_grip(FALSE);
-my $date = `date`; chop $date;
-$statusbar->push(1, "PerlMon-".$VERSION.(" " x 40)."Last updated:  ".$date);
+$statusbar->push(1, "Version: ".$VERSION);
 $table->attach_defaults($statusbar, 0, 6, 4, 5);
 
 ## Creating a VBox
@@ -251,11 +250,11 @@ $label = Gtk2::Label->new($OS->toString(0));
 $table->attach($label, 0, 3, 0, 1, 'expand', 'expand', 5, 5);
 $frame->add($table);
 
-$pagetitle = Gtk2::Label->new("OS info");
+$pagetitle = Gtk2::Label->new("OS");
 $notebook->append_page($frame, $pagetitle);
 
 #-------------------------------CPU stats------------------------------
-$frame = Gtk2::Frame->new("CPU Info");
+$frame = Gtk2::Frame->new("CPU");
 $frame->set_border_width(10);
 $frame->show();
 
@@ -309,9 +308,9 @@ $pbar = Gtk2::ProgressBar->new();
 $label = Gtk2::Label->new($Memory->toString_swap());
 
 $table->attach($label, 0, 1, 0, 1, 'expand', 'expand', 2, 2);
-$pbar->set_text($Memory->getPercentage("Swap"). "% used") if $Memory->{SWAP_T} > 0;
-$pbar->set_text("No Swap") if $Memory->{SWAP_T} == 0;
-$pbar->set_fraction($Memory->getFraction("Swap")) if $Memory->{SWAP_T} > 0;
+$pbar->set_text($Memory->getPercentage("Swap"). "% used") if $Memory->{TOTAL_S} > 0;
+$pbar->set_text("No Swap") if $Memory->{TOTAL_S} == 0;
+$pbar->set_fraction($Memory->getFraction("Swap")) if $Memory->{TOTAL_S} > 0;
 $table->attach($pbar, 0, 1, 1, 2, 'fill', 'fill', 5, 10);
 
 ## Adding swap info to frame
@@ -342,7 +341,7 @@ for (my $i = 0; $i < $HD->{NUM_PARTS}; ++$i) {
 }
 $frame->add($vbox);
 
-$pagetitle = Gtk2::Label->new("Hard Drive Info");
+$pagetitle = Gtk2::Label->new("Hard Drive");
 $notebook->append_page($frame, $pagetitle);
 
 
@@ -369,7 +368,7 @@ if ($GPU->{VENDOR} =~ /NVIDIA/i) {
 	$vbox->pack_start($button, FALSE, FALSE, 2);
 }
 
-$pagetitle = Gtk2::Label->new("Video Card info");
+$pagetitle = Gtk2::Label->new("Video Card");
 $notebook->append_page($frame, $pagetitle);
 
 #--------------------------Monitor-------------------------------------

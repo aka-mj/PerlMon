@@ -25,21 +25,23 @@ use strict;
 use WMDE;
 use Distro;
 
+
 # Constructor
 sub new {
 	my $class = shift;
 	my $self = {
-		"USER"		=> "Unknown",
-		"HOSTNAME"	=> "Unknown",
-		"UPTIME"	=> "Unknown",
-		"OSTYPE"	=> "Unknown",
-		"HARDWARE"	=> "Unknown", 
-		"DISTRO"	=> "Unknown",
+		"USER"			=> "Unknown",
+		"USER_ID"			=> "Unknown",
+		"HOSTNAME"		=> "Unknown",
+		"UPTIME"			=> "Unknown",
+		"OSTYPE"			=> "Unknown",
+		"HARDWARE"		=> "Unknown", 
+		"DISTRO"			=> "Unknown",
 		"DISTRO_LOGO" 	=> "Unknown",
-		"KERNEL_RES"	=> "Unknown",
-		"KERNEL_VER"	=> "Unknown",
-		"WM"		=> "Unknown",
-		"DE"		=> "Unknown"
+		"KERNEL_RES"		=> "Unknown",
+		"KERNEL_VER"		=> "Unknown",
+		"WM"			=> "Unknown",
+		"DE"				=> "Unknown"
 	};
 	bless ($self, $class);
 	return $self;
@@ -53,7 +55,8 @@ sub find_info {
 	my $PS = `which ps`;
 	my $AWK = `which awk`;
 	chomp( $UNAME, $PS, $AWK );
-	chomp( $self->{USER} = `whoami` );
+	chomp( $self->{USER} = getpwuid($<) );
+	chomp( $self->{USER_ID} = $< );
 	chomp( $self->{HOSTNAME} = `$UNAME -n` );
 	chomp( $self->{UPTIME} = &uptime(`cat /proc/uptime`) );
 	chomp( $self->{OSTYPE} = `$UNAME -o` );
@@ -102,7 +105,8 @@ sub uptime {
 # finds.
 sub toString {
 	my $self = shift;
-	return (" $self->{USER} @ $self->{HOSTNAME} \n".
+	return (" User: $self->{USER}     User id: $self->{USER_ID}\n".
+		" Host: $self->{HOSTNAME} \n".
 		" Uptime: $self->{UPTIME} \n\n".
 		" OS: $self->{OSTYPE} \n".
 		" Distro: $self->{DISTRO} \n".

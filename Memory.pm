@@ -27,12 +27,12 @@ use strict;
 sub new {
 	my $class = shift;
 	my $self = {
-		"TOTAL"		=> "Unknown", #Memory Total
-		"FREE"		=> "Unknown", #Memory Free
-		"USED"		=> "Unknown", #Memory used
-		"SWAP_T"	=> "Unknown", #Swap Total
-		"SWAP_F"	=> "Unknown", #Swap Free
-		"SWAP_U"	=> "Unknown", #Swap used
+		"TOTAL_M"		=> "Unknown", #Memory Total
+		"FREE_M"		=> "Unknown", #Memory Free
+		"USED_M"		=> "Unknown", #Memory used
+		"TOTAL_S"	=> "Unknown", #Swap Total
+		"FREE_S"	=> "Unknown", #Swap Free
+		"USED_S"	=> "Unknown", #Swap used
 		"SWAPPINESS"	=> "Unknown", #swappiness number
 		"M_PERCENTAGE"	=> "Unknown", #Percentage of memory used
 		"S_PERCENTAGE"	=> "Unknown"  #Percentage of spaw used
@@ -46,20 +46,21 @@ sub new {
 sub find_info {
 	my $self = shift;
 	$_ = `cat /proc/meminfo`;
-	$self->{TOTAL} = int $1/1024 if /MemTotal\s*:\s+(\d+)/;
-	$self->{FREE} = int $1/1024 if /MemFree\s*:\s+(\d+)/;
-	$self->{USED} = $self->{TOTAL} - $self->{FREE};
-	$self->{SWAP_T} = int $1/1024 if /SwapTotal\s*:\s+(\d+)/;
-	$self->{SWAP_F} = int $1/1024 if /SwapFree\s*:\s+(\d+)/;
-	$self->{SWAP_U} = $self->{SWAP_T} - $self->{SWAP_F};
+	$self->{TOTAL_M} = int $1/1024 if /MemTotal\s*:\s+(\d+)/;
+	$self->{FREE_M} = int $1/1024 if /MemFree\s*:\s+(\d+)/;
+	my $cached = int $1/1024 if /Cached\s*:\s+(\d+)/;
+	$self->{USED_M} = $self->{TOTAL_M} - $self->{FREE_M} - $cached;
+	$self->{TOTAL_S} = int $1/1024 if /SwapTotal\s*:\s+(\d+)/;
+	$self->{FREE_S} = int $1/1024 if /SwapFree\s*:\s+(\d+)/;
+	$self->{USED_S} = $self->{TOTAL_S} - $self->{FREE_S};
 	$self->{SWAPPINESS} = `cat /proc/sys/vm/swappiness`;
 	chomp( $self->{SWAPPINESS} );
 	
-	if ( $self->{TOTAL} != 0 ) {
-		$self->{M_PERCENTAGE} = int(( $self->{USED} / $self->{TOTAL} ) * 100);
+	if ( $self->{TOTAL_M} != 0 ) {
+		$self->{M_PERCENTAGE} = int(( $self->{USED_M} / $self->{TOTAL_M} ) * 100);
 	}	
-	if ( $self->{S_PERCENTAGE} ) {
-		$self->{S_PERCENTAGE} = int(( $self->{SWAP_U} / $self->{SWAP_T} ) * 100);
+	if ( $self->{S_PERCENTAGE} != 0) {
+		$self->{S_PERCENTAGE} = int(( $self->{USED_S} / $self->{TOTAL_S} ) * 100);
 	}
 }
 
@@ -69,9 +70,9 @@ sub getFraction {
 	my $self = shift;
 	my $choice = shift;
 	if ($choice =~ /^memory$/i) {
-		return ($self->{USED} / $self->{TOTAL});
+		return ($self->{USED_M} / $self->{TOTAL_M});
 	} elsif ($choice =~ /^swap$/i) {
-		return ($self->{SWAP_U} / $self->{SWAP_T});
+		return ($self->{USED_S} / $self->{TOTAL_S});
 	}
 }
 
@@ -80,10 +81,10 @@ sub getFraction {
 sub getPercentage {
 	my $self = shift;
 	my $choice = shift;
-	if ($choice =~ /^memory$/i and $self->{TOTAL} != 0) {
-		return ( int(( $self->{USED} / $self->{TOTAL} ) * 100) );
-	} elsif ($choice =~ /^swap$/i and $self->{SWAP_T} != 0) {
-		return ( int(( $self->{SWAP_U} / $self->{SWAP_T} ) * 100) );
+	if ($choice =~ /^memory$/i and $self->{TOTAL_M} != 0) {
+		return ( int(( $self->{USED_M} / $self->{TOTAL_M} ) * 100) );
+	} elsif ($choice =~ /^swap$/i and $self->{TOTAL_S} != 0) {
+		return ( int(( $self->{USED_S} / $self->{TOTAL_S} ) * 100) );
 	} else {
 		return 0;
 	}
@@ -92,16 +93,16 @@ sub getPercentage {
 # Returns String on Memory information
 sub toString_memory {
 	my $self = shift;
-	return (" Total Memory: $self->{TOTAL} MB \n".
-		" Used Memory: $self->{USED} MB \n Free Memory: $self->{FREE} MB"
+	return (" Total Memory: $self->{TOTAL_M} MB \n".
+		" Used Memory: $self->{USED_M} MB \n Free Memory: $self->{FREE_M} MB"
 	);
 }
 
 # Retuns String on Swap information
 sub toString_swap {
 	my $self = shift;
-	return (" Total Swap: $self->{SWAP_T} MB \n".
-		" Used Swap: $self->{SWAP_U} MB \n Free Swap: $self->{SWAP_F} MB\n".
+	return (" Total Swap: $self->{TOTAL_S} MB \n".
+		" Used Swap: $self->{USED_S} MB \n Free Swap: $self->{FREE_S} MB\n".
 		" Swappiness: $self->{SWAPPINESS}"
 	);
 }

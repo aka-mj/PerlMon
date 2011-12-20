@@ -34,3 +34,19 @@ ChangeLog
 01/26/08
 	Added support for lm_sensors
 	Distro.pm cleaned up, no more systems calls(terminal spawns)
+	Release 0.1.3
+
+01/30/08
+	WMDE.pm modified, variable @array removed
+	CPU.pm modified, Added flag key, now sees if CPU has mmx, sse, sse2, sse3, & 3dnow
+	Sensors.pm modified, Added backup way to find MB_TEMP
+
+01/31/08
+	Removed time stamp from status bar on GUI
+	OS.pm modified, better way to get user name
+	OS.pm + added user_id data member to hash
+
+02/09/08
+	Variable name changes in all modules
+	Documentation added
+	Screen color added under monitor tab

@@ -1,5 +1,23 @@
 package WMDE;
 
+#############################################################################
+# Copyright  2007, 2008 Michael John <perlmon.linux@gmail.com>
+# All Rights Reserved
+#
+# This file is part of the PerlMon package.
+#
+#    PerlMon is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; under current version 3 of the License.
+#
+#    PerlMon is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+############################################################################
 
 ## This package has one main job, it tries to determin the Window Manager(if on)
 ## and Desktop Environment(if one) and the version for them.
@@ -53,11 +71,12 @@ my %DElist = (
 );
 
 
-my $processes = `$PS -A | $AWK {'print \$4'}`;
+my $processes = `$PS -A | $AWK {'print \$4'}`; # get a list of all running processes
 
 my ($WM, $DE, $WM_ver, $DE_ver) = qw(Unknown Unknown Unknown Unknown);
-my @array;
-my $m;
+#my @array; ## NOTE: removed effective version 0.1.4 
+my $m; # used in the foreach-loops for finding WM and DE
+
 foreach $m (keys %WMlist) {
 
 	if ($processes =~ /$m/){
@@ -73,7 +92,8 @@ foreach $m (keys %WMlist) {
 		# Metacity
 		@_ = split(/\n/, $WM) and $WM_ver = $_[0] if $m eq "metacity";
 		# IceWM
-		@array = split(/\,/, $WM) and $WM_ver = $array[0] if $m eq "icewm";
+		# @array = split(/\,/, $WM) and $WM_ver = $array[0] if $m eq "icewm"; ## NOTE: removed effective version 0.1.4 
+		@_ = split(/\,/, $WM) and $WM_ver = $_[0] if $m eq "icewm";
 		# Fluxbox
 		@_ = split(/\:/, $WM) and $WM_ver = $_[0] if $m eq "fluxbox";
 		# Blackbox
@@ -81,7 +101,8 @@ foreach $m (keys %WMlist) {
 		# Openbox
 		@_ = split(/\n/, $WM) and $WM_ver = $_[0] if $m eq "openbox";
 		# Enlightenment
-		@array = split(/\n/, $WM) and $WM_ver = $array[0] if $m eq "enlightenment";
+		# @array = split(/\n/, $WM) and $WM_ver = $array[0] if $m eq "enlightenment"; ## NOTE: removed effective version 0.1.4 
+		@_ = split(/\n/, $WM) and $WM_ver = $_[0] if $m eq "enlightenment";
 		# Xfwm4
 		$WM =~ /xfwm4 version .+(?= \(|\s+for)/ and $WM_ver = $& if $m eq "xfwm4";
 		# FVWM
@@ -114,7 +135,7 @@ foreach $m (keys (%DElist)) {
 			$m =~ /\((Xfce.*)\)/;
 			$DE_ver = $1;
 		}
-		last;
+		last; # way waste time going through rest of keys
 	}
 }
 
