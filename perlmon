@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 
 #############################################################################
@@ -31,7 +31,7 @@ use PerlMon::Sensors;
 use Getopt::Long;
 use constant IMAGE_PATH => '/usr/share/perlmon/images/';
 use constant TEXT_SPACER => 78;
-my $VERSION = "0.2.0"; # constant
+my $VERSION = "current"; # constant
 
 
 #############################################################################
@@ -198,7 +198,7 @@ if ($opt_n) {
 if ($opt_s) {
 	# create simple window
 	$OS->find_info(1);
-	my ($window, $table, $label, $image);
+	my ($window, $table, $label);
 	
 	$window = Gtk2::Window->new("toplevel");
 	$window->signal_connect( destroy => sub { Gtk2->main_quit; });
@@ -209,8 +209,7 @@ if ($opt_s) {
 	$window->set_icon_from_file(IMAGE_PATH."./window_logo.png");
 
 	$table = Gtk2::Table->new(1, 5, FALSE);
-	$image = Gtk2::Image->new_from_file(IMAGE_PATH.$OS->getLogo());
-	$table->attach($image, 3, 5, 0, 1, 'fill', 'fill', 5, 5);
+	$table->attach($OS->getLogo(), 3, 5, 0, 1, 'fill', 'fill', 5, 5);
 	
 	$label = Gtk2::Label->new($OS->toString(0));
 	$table->attach($label, 0, 3, 0, 1, 'expand', 'expand', 5, 5);
@@ -420,7 +419,7 @@ $label->show();
 $notebook->append_page($frame, "Monitor");
 
 ########################################################################
-##            Testing             ##########################################
+##            Testing             ######################################
 ########################################################################
 $frame = Gtk2::Frame->new("Temps");
 $frame->set_border_width(10);
@@ -438,7 +437,7 @@ $frame->add($table);
 $notebook->append_page($frame, "Temps");
 
 ########################################################################
-##           End Testing         ###########################################
+##           End Testing         #######################################
 ########################################################################
 
 ##
@@ -448,6 +447,6 @@ $notebook->set_current_page(0);
 $window->show_all;
 
 Gtk2->main;
-##----------------- End of GTK2 GUI code ------------------------------------
+##----------------- End of GTK2 GUI code --------------------------------
 
 }

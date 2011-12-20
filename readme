@@ -1,5 +1,5 @@
 #############################################################################
-# Copyright  2007, 2008 Michael John <perlmon.linux@gmail.com>
+# Copyright  2007-2010 Michael John <perlmon.linux@gmail.com>
 # All Rights Reserved
 #
 # This file is part of the PerlMon package.
@@ -37,22 +37,13 @@ Dependencies required by PerlMon:
 	Gtk2-Perl (only needed if you do not have a full Gtk2 collection)
 	Nvidia driver (Optional) (provides better GPU information)
 		(ATI and Intel support will come in later releases)
-	
+	lm_sensors (Optional)
 			
 	
-NOTE: Currently you don't need to install anything to run PerlMon, 
-	as long as Perl is installed you can run in text mode and 
-	if Gtk2 is installed you can run in GUI mode.
-	I plan on providing a basic installer some time soon.
-	
-	
 Installing PerlMon:
-	
-	To install PerlMon follow these steps:
-		open up a terminal and change directories to the PerlMon package.
-		Example(if it's in your home directory): cd ~/PerlMon-#.#.#
-		then type (super user privileges needed):
-			perl Installer
+
+cd /path_to_/PerlMon-*/
+sudo perl Installer
 
 		
 How to run PerlMon:

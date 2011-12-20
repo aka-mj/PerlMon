@@ -16,7 +16,7 @@ BEGIN {
 }
 
 ## making install directory
-mkdir("$INSTALL_DIR",755);
+mkdir("$INSTALL_DIR",0755);
 print " :: install dir created\n";
 
 ## copying over images
@@ -25,6 +25,7 @@ print " :: install dir created\n";
 ## Installing modules
 `perl Makefile.PL`;
 `make`;
+`make test`;
 `make install`;
 print " :: modules installed\n";
 
