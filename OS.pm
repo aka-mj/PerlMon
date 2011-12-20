@@ -3,7 +3,7 @@ package OS;
 
 
 #############################################################################
-# Copyright© 2007 Michael John
+# Copyright 2007, 2008 Michael John
 # All Rights Reserved
 #
 # This file is part of the PerlMon package.
@@ -58,7 +58,7 @@ sub find_info {
 	chomp( $self->{UPTIME} = &uptime(`cat /proc/uptime`) );
 	chomp( $self->{OSTYPE} = `$UNAME -o` );
 	chomp( $self->{HARDWARE} = `$UNAME -i` );
-	chomp( ($self->{DISTRO}, $self->{DISTRO_LOGO}) = Distro::getDistro("cat", $graphical) );
+	chomp( ($self->{DISTRO}, $self->{DISTRO_LOGO}) = Distro::getDistro($graphical) );
 	chomp( ($self->{WM}, $self->{DE}) = WMDE::getWMDE($PS, $AWK) );
 	chomp( $self->{KERNEL_RES} = `$UNAME -r` );
 	chomp( $self->{KERNEL_VER} = `$UNAME -v` );

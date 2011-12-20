@@ -35,7 +35,6 @@ Dependencies required by PerlMon:
 	Perl
 	Gtk2 (optional) (needed to run PerlMon in GUI mode)
 	Gtk2-Perl (only needed if you do not have a full Gtk2 collection)
-	QT-Perl(libqt-perl)  (only needed to run the QT GUI version)
 	Glib (no longer needed as of release 0.1.1)
 	Nvidia driver (Optional) (provides better GPU information)
 		(ATI and Intel support will come in later releases)

@@ -17,8 +17,8 @@ ChangeLog
 	Release 0.1.1
 	
 8/24/07
-	Combining the two methods in Distro.pm (Gtk2 code to not interfer
-		if not on system.
+	Combining the two methods in Distro.pm (Gtk2 code will not crash program
+		if not on system)
 	
 10/3/07
 	Divide by zero error in Memory.pm fixed
@@ -27,5 +27,10 @@ ChangeLog
 10/8/07
 	Release 0.1.2
 
+10/13/07
+	Added support for hddtemp, A hard drive temperature monitoring tool
+	Added statusbar, displays PerlMon version and start-up time stamp
 
-	
+01/26/08
+	Added support for lm_sensors
+	Distro.pm cleaned up, no more systems calls(terminal spawns)

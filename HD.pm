@@ -2,7 +2,7 @@ package HD;
 
 
 #############################################################################
-# Copyright© 2007 Michael John
+# Copyright© 2007, 2008 Michael John
 # All Rights Reserved
 #
 # This file is part of the PerlMon package.

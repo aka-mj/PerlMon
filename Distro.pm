@@ -29,67 +29,78 @@ use strict;
 # 	in the README file.
 #
 #
+my $distro = "Unknown Distro";
+
+
+sub openFile {
+	my $file = shift;
+	open (FILE, $file) || die "Cannot open file";
+	$distro = <FILE>;
+	close (FILE);
+} ## end openFile
+
 
 sub getDistro {
-   	my $CAT = shift;
 	my $graphical = shift;
 	##$graphical = 0 if length($graphical);
-   	my $distro = "Unknown Distro";
+	my $file; ## full path to file
+   	
    	my $index = 0;
 	my $path = "./images";
 	my $logo = Gtk2::Image->new_from_file("$path/tux.png") if $graphical;
 
    	if (-f "/etc/coas") {
-      		$distro = `$CAT /etc/coas`;
+      		openFile("/etc/coas");
    	} elsif (-f "/etc/environment.corel") {
-      		$distro = `$CAT /etc/environment.core`;
+      		openFile("/etc/environment.corel");
 	} elsif (-f "/etc/fedora-release") { 
 		## Fedora	
-		$distro = `$CAT /etc/fedora-release`;
+		openFile("/etc/fedora-release");
 		$logo->set_from_file("$path/fedora_logo.png") if $graphical;
 	} elsif (-f "/etc/mandrake-release") {
 		## Mandrake
-		$distro = `$CAT /etc/mandrake-release`;
+		openFile("/etc/mandrake-release");
 		$logo->set_from_file("$path/mandriva_logo.png") if $graphical;
 	} elsif (-f "/etc/mandriva-release") {
 		## Mandriva
-		$distro = `$CAT /etc/mandriva-release`;
+		openFile("/etc/mandriva-release");
 		$logo->set_from_file("$path/mandriva_logo.png") if $graphical;
 	} elsif (-f "/etc/SuSE-release") {
 		## SUSE
-		$distro = `$CAT /etc/SuSE-release`;
+		openFile("/etc/SuSE-release");
 		$logo->set_from_file("$path/suse_logo.png") if $graphical;
 	} elsif (-f "/etc/turbolinux-release") {
 		## Turbo Linux
-		$distro = `$CAT /etc/turbolinux-release`;
+		openFile("/etc/turbolinux-release");
 		$logo->set_from_file("$path/turbolinux_logo.png") if $graphical;
 	} elsif (-f "/etc/slackware-version") {
 		## Slackware
-		$distro = `$CAT /etc/slackware-version`;
+		openFile("/etc/slackware-version");
 		$logo->set_from_file("$path/slackware_logo.png") if $graphical;
 	} elsif (-f "/etc/enlisy-release") {
 		## Enlisy
-		$distro = `$CAT /etc/enlisy-release`;
+		openFile("/etc/enlisy-release");
 		$logo->set_from_file("$path/enlisy_logo.png") if $graphical;
 	} elsif (-f "/etc/arch-release") {
 		## Arch Linux
-		$distro = `$CAT /etc/arch-release`;
+		## $distro = `$CAT /etc/arch-release`;
+		$distro = "Arch";
 		$logo->set_from_file("$path/arch_logo.png") if $graphical;
 	} elsif (-f "/etc/sabayon-release") {
 		## Sabayon
-		$distro = `$CAT /etc/sabayon-release`;
+		openFile("/etc/sabayon-release");
 		$logo->set_from_file("$path/sabayon_logo.png") if $graphical;
 	} elsif (-f "/etc/gentoo-release") {
 		## Gentoo
-		$distro = `$CAT /etc/gentoo-release`;
+		openFile("/etc/gentoo-release");
 		$logo->set_from_file("$path/gentoo_logo.png") if $graphical;
 	}elsif (-f "/etc/redhat-release") {
 		## Red Hat
-		$distro = `$CAT /etc/redhat-release`;
+ 		openFile("/etc/redhat-release");
 		$logo->set_from_file("$path/redhat_logo.png") if $graphical;
 	} elsif (-f "/etc/zenwalk-version") {
 		## Zenwalk
-		$distro = `$CAT /etc/zenwalk-version`;
+		openFile("/etc/zenwalk-version");
 		$logo->set_from_file("$path/zenwalk_logo.png") if $graphical;
 	} elsif (-f "/etc/lsb-release"){
 
@@ -126,6 +137,8 @@ sub getDistro {
 	
 	chomp $distro;
    	return ($distro, $logo);
-}
+}  ## end getDistro
+
+
 
 1; #make compiler happy
